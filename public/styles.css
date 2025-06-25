@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+li {
+    list-style: none;
+
+    input {
+        width: 100%;
+    }
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+
+    margin: 0;
+    padding: 2rem;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+
+    h1 {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    form {
+        border: 1px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    input {
+        background-color: transparent;
+        padding: 1rem;
+        width: 100%;
+    }
+
+    button {
+        background-color: #4f9f24;
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+}
+
+main {
+    padding: 1rem;
+    border: 1px solid #ccc;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font: inherit;
+}
+
+input[name="status"] {
+    margin-bottom: 1rem;
+}
+
+ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+
+    li {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 1rem;
+        background-color: #f9f9f9;
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #0056b3;
+            }
+        }
+
+        input {
+
+            margin: 5px 0;
+        }
+
+        input[name="item"] {
+            font-size: 1.2rem;
+
+        }
+    }
+}
+
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #666;
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
