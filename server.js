@@ -14,9 +14,14 @@ let db;
 app.use(bodyParser.urlencoded({ extended: true }));
 
 async function main() {
-    await client.connect();
-    console.log('Connected successfully to MongoDB');
-    db = client.db(dbName);
+    try {
+        await client.connect();
+        console.log('Connected successfully to MongoDB');
+        db = client.db(dbName);
+    } catch (err) {
+        console.error('MongoDB connection failed:', err.message);
+        db = null;
+    }
 
     app.listen(port, () => {
         console.log(`App listening at http://localhost:${port}`);
@@ -24,8 +29,15 @@ async function main() {
 }
 
 app.get('/', async (req, res) => {
-    const collection = db.collection('documents');
-    const documents = await collection.find({}).toArray();
+    let documents = [];
+    if (db) {
+        try {
+            const collection = db.collection('documents');
+            documents = await collection.find({}).toArray();
+        } catch (err) {
+            console.error('Error fetching documents:', err.message);
+        }
+    }
 
     let html = `
     <!DOCTYPE html>
@@ -49,21 +61,25 @@ app.get('/', async (req, res) => {
             <ul>
     `;
 
-    documents.forEach(doc => {
-        html += `
-            <li>
-                <form method="POST" action="/update/${doc._id}" style="display:inline;">
-                    <input name="item" value="${doc.item}" />
-                    <input name="qty" type="number" value="${doc.qty}" />
-                    <input name="status" value="${doc.status}" />
-                    <button type="submit">Update</button>
-                </form>
-                <form method="POST" action="/delete/${doc._id}" style="display:inline;">
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-        `;
-    });
+    if (db && documents.length > 0) {
+        documents.forEach(doc => {
+            html += `
+                <li>
+                    <form method="POST" action="/update/${doc._id}" style="display:inline;">
+                        <input name="item" value="${doc.item}" />
+                        <input name="qty" type="number" value="${doc.qty}" />
+                        <input name="status" value="${doc.status}" />
+                        <button type="submit">Update</button>
+                    </form>
+                    <form method="POST" action="/delete/${doc._id}" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            `;
+        });
+    } else {
+        html += '<li>No MongoDB connection. Showing static page.</li>';
+    }
 
     html += '</ul></main><footer><p>Node.js + MongoDB Example</p></footer></body></html>';
     res.send(html);
@@ -71,6 +87,7 @@ app.get('/', async (req, res) => {
 
 // Create
 app.post('/add', async (req, res) => {
+    if (!db) return res.redirect('/');
     const collection = db.collection('documents');
     await collection.insertOne({
         item: req.body.item,
@@ -82,6 +99,7 @@ app.post('/add', async (req, res) => {
 
 // Update
 app.post('/update/:id', async (req, res) => {
+    if (!db) return res.redirect('/');
     const collection = db.collection('documents');
     await collection.updateOne(
         { _id: new ObjectId(req.params.id) },
@@ -96,6 +114,7 @@ app.post('/update/:id', async (req, res) => {
 
 // Delete
 app.post('/delete/:id', async (req, res) => {
+    if (!db) return res.redirect('/');
     const collection = db.collection('documents');
     await collection.deleteOne({ _id: new ObjectId(req.params.id) });
     res.redirect('/');
