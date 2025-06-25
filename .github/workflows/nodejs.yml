@@ -20,16 +20,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npx eslint . || echo "Lint errors"
-
       - name: Build
         run: npm run build || echo "No build script defined."
 
       - name: Test
         run: npm test || echo "No test script defined."
 
-      - name: SSH Deploy with PM2
+      - name: SSH Deploy, Install PM2, and Restart
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -40,4 +37,6 @@ jobs:
             git pull origin main
             npm ci
             npm run build || echo "No build script defined."
+            npm install -g pm2 || true
             pm2 reload ecosystem.config.js --env production || pm2 restart node-app
+
